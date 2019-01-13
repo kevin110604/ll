@@ -111,6 +111,17 @@ void ll_no_teardown(void *n);
 
 ## Testing
 
+run `bin/ll`
+
 ```bash
 $ make test
 ```
+
+## Testing main
+
+run `bin/main`
+
+```bash
+$ make test_main
+```
+

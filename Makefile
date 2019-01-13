@@ -6,6 +6,7 @@ DIRS   = $(SRCDIR) $(OBJDIR) $(BINDIR) $(INDDIR)
 
 # name of executable
 EXEC = ll
+EXEC_MAIN = bin/main
 
 # all the cource code pregenerated as a string and not just the string `*.c`
 SRC = $(wildcard $(SRCDIR)/*.c)
@@ -34,9 +35,9 @@ CFLAGS += -g -std=c99 -D_GNU_SOURCE -pthread -O3
 CFLAGS += -I"$(INCDIR)"
 
 # designates which rules aren't actually targets
-.PHONY: all o exec test clean clean_obj clean_ll clean_very
+.PHONY: all o exec test test_main clean clean_obj clean_ll clean_very
 
-all: $(OBJ) $(EXEC)
+all: $(OBJ) $(EXEC) $(EXEC_MAIN)
 
 # for only compiling object voce
 o: $(OBJ)
@@ -57,12 +58,21 @@ $(BINDIR)/%: $(SRCDIR)/%.c
 	@echo building binary...
 	$(CC) $(CFLAGS) -DLL -o $@ $<
 
+# build main
+$(EXEC_MAIN): $(OBJ)
+	@echo building main binary...
+	$(CC) $(CFLAGS) -o $@ $^
+
 $(DIRS):
 	@mkdir -p $@
 
 test: $(EXEC)
 	@echo running tests...
 	@$(BINDIR)/$(EXEC)
+
+test_main: $(EXEC_MAIN)
+	@echo running main...
+	@$(EXEC_MAIN)
 
 # cleans everything up when done
 clean: clean_obj clean_ll
