@@ -101,8 +101,8 @@ void *test_org()
     int h = 3;
     int i = 3;
     
-    if(list->step == 0){
-        list->step++;
+    if(list->len == 0){
+        list->len++;
         ll_insert_first(list, &c); // 2 in front
 
         _n = (int *)ll_get_first(list);
@@ -114,8 +114,8 @@ void *test_org()
         test_count++;
     }
     
-    if(list->step == 1){
-        list->step++;
+    if(list->len == 1){
+        list->len++;
         if (list->len != 1) {
             fprintf(stderr, "FAIL Test %d: Expected %d, but got %d.\n", test_count, 1, list->len);
             fail_count++;
