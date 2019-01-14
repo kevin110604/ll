@@ -4,6 +4,9 @@
 
 #include "ll.h"
 
+// macros
+#define NUM_OF_NODES 10000
+#define NUM_OF_THREADS 1
 
 // function prototypes
 void num_teardown(void *n);
@@ -19,54 +22,52 @@ ll_t *list;
 int main()
 {
     int i;
-    int num_threads = 3;
     pthread_t *threads;
+
     list = ll_new(num_teardown);
     list->val_printer = num_printer;
 
-    int x1 = 1;
-    int x2 = 2;
-    int x3 = 23;
-    int x4 = 10000;
+    int x;
+    int *num[NUM_OF_NODES];
 
-    if (ll_insert_n(list, &x1, 0) != -1)
-        puts("succeed!");
-    if (ll_insert_n(list, &x2, 1) != -1)
-        puts("succeed!");
-    if (ll_insert_n(list, &x3, 2) != -1)
-        puts("succeed!");
-    if (ll_insert_n(list, &x4, 3) != -1)
-        puts("succeed!");
+    for (x = NUM_OF_NODES - 1; x >= 0; x--) {
+        num[x] = malloc(sizeof(int));
+        if (num[x] == NULL) {
+            perror("malloc fail\n");
+            exit(1);
+        }
+        *num[x] = x;
+        if (ll_insert_n(list, num[x], 0) == -1)
+            puts("insert fail!");
+    }
 
-
-
-    if ((threads = (pthread_t *)malloc(num_threads * sizeof(pthread_t))) == NULL) {
+    if ((threads = (pthread_t *)malloc(NUM_OF_THREADS * sizeof(pthread_t))) == NULL) {
         perror("malloc");
         exit(1);
     }
 
-    for (i = 0; i < num_threads; i++) {
+    for (i = 0; i < NUM_OF_THREADS; i++) {
         if (pthread_create(&threads[i], NULL, test, NULL) != 0) {
             fprintf(stderr, "Error creating thread\n");
             exit(1);
         }
     }
 
-    for (i = 0; i < num_threads; i++) {
+    for (i = 0; i < NUM_OF_THREADS; i++) {
         if (pthread_join(threads[i], NULL) != 0) {
             fprintf(stderr, "Error waiting for thread completion\n");
             exit(1);
         }
     }
 
-    //ll_delete(list);
+    ll_delete(list);
 
     return 0;
 }
 
 void num_teardown(void *n) 
 {
-    *(int *)n *= -1; // just so we can visually inspect removals afterwards
+    free (n);
 }
 
 void num_printer(void *n) 
