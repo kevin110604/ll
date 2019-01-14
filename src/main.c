@@ -4,11 +4,12 @@
 
 #include "ll.h"
 
-// macros
-#define NUM_OF_NODES 10000
-#define NUM_OF_THREADS 1
+// macros (depends on how much you want)
+#define NUM_OF_NODES 1000
+#define NUM_OF_THREADS 10
 
 // function prototypes
+int *num_malloc(int val);
 void num_teardown(void *n);
 void num_printer(void *n);
 int num_equals_3(void *n);
@@ -31,14 +32,9 @@ int main()
     int *num[NUM_OF_NODES];
 
     for (x = NUM_OF_NODES - 1; x >= 0; x--) {
-        num[x] = malloc(sizeof(int));
-        if (num[x] == NULL) {
-            perror("malloc fail\n");
-            exit(1);
-        }
-        *num[x] = x;
+        num[x] = num_malloc(x);
         if (ll_insert_n(list, num[x], 0) == -1)
-            puts("insert fail!");
+            puts("insert fail in main!");
     }
 
     if ((threads = (pthread_t *)malloc(NUM_OF_THREADS * sizeof(pthread_t))) == NULL) {
@@ -60,9 +56,21 @@ int main()
         }
     }
 
+    ll_print(*list);
     ll_delete(list);
 
     return 0;
+}
+
+int *num_malloc(int val)
+{
+    int *n = malloc(sizeof(int));
+    if (n == NULL) {
+        perror("malloc fail\n");
+        exit(1);
+    }
+    *n = val;
+    return n;
 }
 
 void num_teardown(void *n) 
@@ -82,7 +90,17 @@ int num_equals_3(void *n)
 
 void *test()
 {
-    ll_print(*list);
+    int aaa = 9487;
+    int bbb = 499;
+
+    int *ccc = num_malloc(aaa);
+    if (ll_insert_last(list, ccc) == -1) {
+        puts("insert fail in test!");
+    }
+
+    if (ll_remove_n(list, bbb) == -1) {
+        puts("remove fail in test!");
+    }
 
     return NULL;
 }
