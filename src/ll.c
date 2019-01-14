@@ -77,7 +77,8 @@ struct ll_node {
  *
  * @returns a pointer to a new linked list
  */
-ll_t *ll_new(gen_fun_t val_teardown) {
+ll_t *ll_new(gen_fun_t val_teardown) 
+{
     ll_t *list = (ll_t *)malloc(sizeof(ll_t));
     list->hd = NULL;
     list->len = 0;
@@ -90,12 +91,13 @@ ll_t *ll_new(gen_fun_t val_teardown) {
 /**
  * @function ll_delete
  *
- * Traversesthe whole linked list and deletes/deallocates the nodes then frees the linked
+ * Traverses the whole linked list and deletes/deallocates the nodes then frees the linked
  * list itself.
  *
  * @param list - the linked list
  */
-void ll_delete(ll_t *list) {
+void ll_delete(ll_t *list) 
+{
     ll_node_t *node = list->hd;
     ll_node_t *tmp;
     RWLOCK(l_write, list->m);
@@ -128,7 +130,8 @@ void ll_delete(ll_t *list) {
  *
  * @returns a pointer to the new node
  */
-ll_node_t *ll_new_node(void *val) {
+ll_node_t *ll_new_node(void *val) 
+{
     ll_node_t *node = (ll_node_t *)malloc(sizeof(ll_node_t));
     node->val = val;
     node->nxt = NULL;
@@ -149,7 +152,8 @@ ll_node_t *ll_new_node(void *val) {
  *
  * @returns 0 if successful, -1 otherwise
  */
-int ll_select_n_min_1(ll_t *list, ll_node_t **node, int n, locktype_t lt) {
+int ll_select_n_min_1(ll_t *list, ll_node_t **node, int n, locktype_t lt) 
+{
     if (n < 0) // don't check against list->len because threads can add length
         return -1;
 
@@ -189,9 +193,10 @@ int ll_select_n_min_1(ll_t *list, ll_node_t **node, int n, locktype_t lt) {
  * @param val - a pointer to the value
  * @param n - the index
  *
- * @returns 0 if successful, -1 otherwise
+ * @returns the new length of the linked list if successful, -1 otherwise
  */
-int ll_insert_n(ll_t *list, void *val, int n) {
+int ll_insert_n(ll_t *list, void *val, int n) 
+{
     ll_node_t *new_node = ll_new_node(val);
 
     if (n == 0) { // nth_node is list->hd
@@ -225,9 +230,10 @@ int ll_insert_n(ll_t *list, void *val, int n) {
  * @param list - the linked list
  * @param val - a pointer to the value
  *
- * @returns the new length of thew linked list on success, -1 otherwise
+ * @returns the new length of the linked list if successful, -1 otherwise
  */
-int ll_insert_first(ll_t *list, void *val) {
+int ll_insert_first(ll_t *list, void *val) 
+{
     return ll_insert_n(list, val, 0);
 }
 
@@ -239,9 +245,10 @@ int ll_insert_first(ll_t *list, void *val) {
  * @param list - the linked list
  * @param val - a pointer to the value
  *
- * @returns the new length of thew linked list on success, -1 otherwise
+ * @returns the new length of the linked list if successful, -1 otherwise
  */
-int ll_insert_last(ll_t *list, void *val) {
+int ll_insert_last(ll_t *list, void *val) 
+{
     return ll_insert_n(list, val, list->len);
 }
 
@@ -253,9 +260,10 @@ int ll_insert_last(ll_t *list, void *val) {
  * @param list - the linked list
  * @param n - the index
  *
- * @returns the new length of thew linked list on success, -1 otherwise
+ * @returns the new length of the linked list if successful, -1 otherwise
  */
-int ll_remove_n(ll_t *list, int n) {
+int ll_remove_n(ll_t *list, int n) 
+{
     ll_node_t *tmp;
     if (n == 0) {
         RWLOCK(l_write, list->m);
@@ -288,9 +296,10 @@ int ll_remove_n(ll_t *list, int n) {
  *
  * @param list - the linked list
  *
- * @returns 0 if successful, -1 otherwise
+ * @returns the new length of the linked list if successful, -1 otherwise
  */
-int ll_remove_first(ll_t *list) {
+int ll_remove_first(ll_t *list) 
+{
     return ll_remove_n(list, 0);
 }
 
@@ -303,9 +312,10 @@ int ll_remove_first(ll_t *list) {
  * @param cond - a function that will be called on the values of each node. It should
  * return 1 of the element matches.
  *
- * @returns the new length of thew linked list on success, -1 otherwise
+ * @returns the new length of the linked list if successful, -1 otherwise
  */
-int ll_remove_search(ll_t *list, int cond(void *)) {
+int ll_remove_search(ll_t *list, int cond(void *)) 
+{
     ll_node_t *last = NULL;
     ll_node_t *node = list->hd;
     while ((node != NULL) && !(cond(node->val))) {
@@ -345,7 +355,8 @@ int ll_remove_search(ll_t *list, int cond(void *)) {
  *
  * @returns the `val` attribute of the nth element of `list`.
  */
-void *ll_get_n(ll_t *list, int n) {
+void *ll_get_n(ll_t *list, int n) 
+{
     ll_node_t *node = NULL;
     if (ll_select_n_min_1(list, &node, n + 1, l_read))
         return NULL;
@@ -363,7 +374,8 @@ void *ll_get_n(ll_t *list, int n) {
  *
  * @returns the `val` attribute of the first element of `list`.
  */
-void *ll_get_first(ll_t *list) {
+void *ll_get_first(ll_t *list) 
+{
     return ll_get_n(list, 0);
 }
 
@@ -375,7 +387,8 @@ void *ll_get_first(ll_t *list) {
  * @param list - the linked list
  * @param f - the function to call on the values.
  */
-void ll_map(ll_t *list, gen_fun_t f) {
+void ll_map(ll_t *list, gen_fun_t f) 
+{
     ll_node_t *node = list->hd;
 
     while (node != NULL) {
@@ -395,7 +408,8 @@ void ll_map(ll_t *list, gen_fun_t f) {
  *
  * @param list - the linked list
  */
-void ll_print(ll_t list) {
+void ll_print(ll_t list) 
+{
     if (list.val_printer == NULL)
         return;
 
@@ -411,7 +425,8 @@ void ll_print(ll_t list) {
  *
  * @param n - a pointer
  */
-void ll_no_teardown(void *n) {
+void ll_no_teardown(void *n) 
+{
     n += 0; // compiler won't let me just return
 }
 
